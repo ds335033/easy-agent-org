@@ -1,0 +1,15 @@
+{
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  "terminal.integrated.enablePersistentSessions": true,
+  "files.exclude": {
+    "**/.runtime": true,
+    "**/data": true,
+    "**/dist": true
+  },
+  "search.exclude": {
+    "**/.runtime": true,
+    "**/data": true,
+    "**/dist": true
+  }
+}

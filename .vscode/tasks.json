@@ -1,0 +1,75 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Easy Agent: Verify local model",
+      "type": "process",
+      "command": "node",
+      "args": ["scripts/developer-tools.mjs", "probe"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Easy Agent: Start workspace",
+      "type": "process",
+      "command": "node",
+      "args": ["scripts/developer-tools.mjs", "app"],
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Easy Agent: Test",
+      "type": "process",
+      "command": "npm.cmd",
+      "args": ["test"],
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Easy Agent: Check",
+      "type": "process",
+      "command": "npm.cmd",
+      "args": ["run", "check"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Easy Agent: Build",
+      "type": "process",
+      "command": "npm.cmd",
+      "args": ["run", "build"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Codex CLI (non-daemon fallback)",
+      "type": "process",
+      "command": "codex",
+      "args": ["--no-daemon", "-C", "${workspaceFolder}"],
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "focus": true }
+    },
+    {
+      "label": "Codex: Astra xhigh Fast",
+      "type": "process",
+      "command": "codex",
+      "args": ["--profile", "astra-xhigh-fast", "-C", "${workspaceFolder}"],
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "focus": true }
+    },
+    {
+      "label": "Codex: Sol xhigh Fast",
+      "type": "process",
+      "command": "codex",
+      "args": ["--profile", "sol-xhigh-fast", "-C", "${workspaceFolder}"],
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "focus": true }
+    },
+    {
+      "label": "Codex Cloud: List tasks",
+      "type": "process",
+      "command": "codex",
+      "args": ["cloud", "list"],
+      "problemMatcher": []
+    }
+  ]
+}

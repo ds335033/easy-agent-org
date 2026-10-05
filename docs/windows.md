@@ -47,6 +47,27 @@ below are installed; they do not replace those applications' setup.
 The confirmed Windows Codex launch procedure and administrator-terminal error
 recovery are archived in [`windows-codex-installation.md`](windows-codex-installation.md).
 
+## VS Code workspace
+
+The Windows installer requests the official VS Code package and recommends the
+OpenAI Codex and Microsoft PowerShell extensions. After reopening a normal,
+non-administrator PowerShell terminal, open the complete project:
+
+```powershell
+cd "$env:USERPROFILE\Documents\easy-agent-org"
+code .
+```
+
+VS Code automatically reads `.vscode/settings.json`, `.vscode/tasks.json`,
+`.vscode/extensions.json`, and `.vscode/mcp.json`. Open the integrated terminal
+with **Terminal → New Terminal**. It starts PowerShell in the repository root.
+Use **Terminal → Run Task** for probes, tests, builds and local application startup.
+
+The MCP file registers official Cloudflare and Stripe endpoints. Registration is
+not account access: authenticate interactively in VS Code and grant only the
+required sandbox/test permissions. Do not authorize live Stripe mutations while
+validating the development environment.
+
 Codex reads `AGENTS.md`; Claude Code reads `CLAUDE.md` and its five Agent OS
 commands; Cursor reads `.cursor/rules/easy-agent.mdc`. These share project rules
 and source files. They do not share authentication, bypass usage limits, or

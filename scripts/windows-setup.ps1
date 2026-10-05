@@ -6,7 +6,7 @@ if (-not [Environment]::Is64BitOperatingSystem) { throw 'An x64 Windows installa
 if ($env:PROCESSOR_ARCHITECTURE -notin @('AMD64', 'x86')) { throw 'This setup targets an x64 Dell/Windows PC.' }
 if ($InstallPrerequisites) {
   if (-not (Get-Command winget -ErrorAction SilentlyContinue)) { throw 'Install Microsoft App Installer (winget) first.' }
-  foreach ($PackageId in @('Git.Git', 'OpenJS.NodeJS.LTS', 'Ollama.Ollama')) {
+  foreach ($PackageId in @('Git.Git', 'OpenJS.NodeJS.LTS', 'Ollama.Ollama', 'Microsoft.VisualStudioCode')) {
     winget install --id $PackageId --exact --source winget --accept-package-agreements --accept-source-agreements
     if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne -1978335189) { throw "winget failed for $PackageId ($LASTEXITCODE)" }
   }
@@ -29,6 +29,17 @@ try {
   if ($LASTEXITCODE -ne 0) { throw 'Orca installation failed.' }
   $env:EASY_AGENT_TOOLS_DIR = $ToolsDirectory
   [Environment]::SetEnvironmentVariable('EASY_AGENT_TOOLS_DIR', $ToolsDirectory, 'User')
+  $CodexDirectory = Join-Path $env:USERPROFILE '.codex'
+  New-Item -ItemType Directory -Force -Path $CodexDirectory | Out-Null
+  foreach ($Profile in Get-ChildItem (Join-Path $ProjectDirectory 'config\codex-profiles') -Filter '*.config.toml') {
+    $Destination = Join-Path $CodexDirectory $Profile.Name
+    if (Test-Path $Destination) {
+      $Backup = "$Destination.backup-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+      Copy-Item $Destination $Backup
+      Write-Host "Backed up existing Codex profile to $Backup"
+    }
+    Copy-Item $Profile.FullName $Destination
+  }
   New-Item -ItemType Directory -Force -Path '.runtime' | Out-Null
   $OperatorIdentity = [Security.Principal.WindowsIdentity]::GetCurrent().Name
   icacls '.runtime' /inheritance:r /grant:r "${OperatorIdentity}:(OI)(CI)F" | Out-Null
@@ -43,6 +54,21 @@ try {
     Write-Warning 'Project execution needs Docker. Install Docker Desktop using its official Windows instructions if this Windows build is supported, or use a supported remote execution host.'
   }
   Write-Host 'Installed pinned developer tools. Agent OS instructions are already included in this repository.'
+  if (Get-Command codex -ErrorAction SilentlyContinue) {
+    codex login status
+    codex --strict-config --profile astra-xhigh-fast doctor --summary --no-color
+    if ($LASTEXITCODE -ne 0) { Write-Warning 'Codex profile validation failed. Run codex doctor from a normal terminal.' }
+  } else {
+    Write-Warning 'Codex CLI is not installed or is not on PATH. Install it through the official OpenAI Codex workflow, then rerun this script.'
+  }
+  if (Get-Command code -ErrorAction SilentlyContinue) {
+    code --install-extension openai.chatgpt --force
+    if ($LASTEXITCODE -ne 0) { Write-Warning 'Could not install the official OpenAI Codex VS Code extension. Install it from the VS Code Extensions view.' }
+    code --install-extension ms-vscode.PowerShell --force
+    if ($LASTEXITCODE -ne 0) { Write-Warning 'Could not install the Microsoft PowerShell VS Code extension.' }
+  } else {
+    Write-Warning 'Reopen PowerShell after VS Code installation so the code command is available.'
+  }
   Write-Warning 'The pinned OmniRoute dependency audit has high/critical advisories. Its launcher is blocked pending a patched upgrade. Use direct local Ollama.'
-  Write-Host 'Next: ollama pull qwen3:1.7b; start supported Docker Linux containers; docker pull node:24-bookworm; start the app. See docs/windows.md.'
+  Write-Host 'Next: reopen a non-administrator terminal; run code .; ollama pull qwen3:1.7b; start supported Docker Linux containers; docker pull node:24-bookworm; start the app. See docs/windows.md.'
 } finally { Pop-Location }

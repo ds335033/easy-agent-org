@@ -93,4 +93,5 @@ not provide editable source. No payment source was imported from unrelated apps,
 no live charges were enabled, and the existing audience was not changed.
 
 Read [architecture](docs/architecture.md), [configuration](docs/developer-configuration.md),
-and [operations/recovery](docs/operations.md) before hosting this service.
+[Codex/Cloudflare/Stripe/VS Code setup](docs/codex-cloud-integrations.md), and
+[operations/recovery](docs/operations.md) before hosting this service.
