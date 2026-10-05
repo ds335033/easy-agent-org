@@ -4,8 +4,8 @@ COPY package.json ./
 COPY src ./src
 COPY public ./public
 COPY config ./config
-RUN mkdir -p /app/data/workspaces && chown -R node:node /app
+RUN mkdir -p /app/data && chown -R node:node /app
 USER node
-ENV HOST=0.0.0.0 PORT=3000 DATA_DIR=/app/data/workspaces
+ENV HOST=0.0.0.0 PORT=3000 DATA_DIR=/app/data
 EXPOSE 3000
 CMD ["node", "src/server.js"]

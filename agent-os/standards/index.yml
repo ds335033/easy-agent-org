@@ -1,0 +1,7 @@
+# Agent OS Standards Index
+
+root:
+  engineering:
+    description: Architecture, change review, testing, and visual design
+  security:
+    description: Ownership, execution boundaries, secrets, and provider access

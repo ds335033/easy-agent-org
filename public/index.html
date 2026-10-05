@@ -3,26 +3,50 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Easy Agent GPT</title>
+  <meta name="theme-color" content="#101010">
+  <title>Easy Agent Codex</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <header><div><span class="mark">EA</span><strong>Easy Agent GPT</strong></div><span id="status">Connecting…</span></header>
-  <main>
-    <aside>
-      <label>Workspace<input id="session" value="founder-lab" maxlength="48"></label>
-      <button id="open">Open workspace</button>
-      <section><h2>Files</h2><div id="files" class="files">No files yet</div></section>
-      <section><h2>Git</h2><pre id="git">Not initialized</pre></section>
-      <section><h2>Integrations</h2><div id="integrations" class="files">Checking…</div></section>
-    </aside>
-    <section class="agent">
-      <div class="hero"><small>FOUNDER · DEVELOPER MODE</small><h1>A coding workspace you control.</h1><p>No app-level quota. Usage is limited by your hardware and model provider.</p></div>
-      <div id="messages" class="messages"><article class="assistant">Tell me what to build. I can inspect files, edit code, run commands, and test the result.</article></div>
-      <form id="chat"><textarea id="prompt" rows="3" placeholder="Create a production-ready…" required></textarea><button>Run agent</button></form>
-      <details><summary>Direct terminal</summary><form id="terminal"><input id="command" placeholder="git status"><button>Run</button></form><pre id="output"></pre></details>
-    </section>
-  </main>
+  <a class="skip-link" href="#workspace">Skip to workspace</a>
+  <div id="app" hidden>
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">EA</span><span><strong>Easy Agent</strong><small>CODEX</small></span></div>
+      <div class="top-status" aria-label="Runtime status"><span id="model-status" class="status-pill neutral"><i></i> Model unverified</span><span id="executor-status" class="status-pill neutral"><i></i> Executor unknown</span></div>
+      <div class="top-actions"><button id="download-artifact" class="button ghost" type="button">Export</button><span id="publish-reason" class="publish-reason">Sites not connected</span><button id="publish" class="button primary" type="button" disabled aria-describedby="publish-reason">Publish</button><button id="account-button" class="avatar" type="button" aria-label="End session">DS</button></div>
+    </header>
+    <div class="shell">
+      <aside class="sidebar" aria-label="Projects and files">
+        <div class="sidebar-heading"><span>Projects</span><button id="new-project" class="icon-button" type="button" aria-label="Create project">+</button></div>
+        <label class="sr-only" for="project-select">Current project</label><select id="project-select"><option value="">No projects</option></select>
+        <div class="sidebar-heading files-heading"><span>Files</span><button id="refresh-files" class="icon-button" type="button" aria-label="Refresh files">↻</button></div>
+        <nav id="file-tree" class="file-tree" aria-label="Project files"><p class="empty compact">Choose a project to browse files.</p></nav>
+        <div class="sidebar-footer"><button id="checkpoint" class="button ghost wide" type="button" disabled>Create checkpoint</button><button id="restore" class="button quiet wide" type="button" disabled>Restore checkpoint</button></div>
+      </aside>
+      <main id="workspace" class="workspace" tabindex="-1">
+        <nav class="tabs" aria-label="Workspace views"><button class="tab active" type="button" role="tab" aria-selected="true" data-view="code">Code</button><button class="tab" type="button" role="tab" aria-selected="false" data-view="changes">Changes</button><button class="tab" type="button" role="tab" aria-selected="false" data-view="checks">Checks</button><button class="tab" type="button" role="tab" aria-selected="false" data-view="preview">Preview</button></nav>
+        <section id="view-code" class="view code-view" data-view-panel="code">
+          <div class="editor-pane">
+            <div class="pane-bar"><span id="file-path">No file open</span><button id="save-file" class="button small" type="button" disabled>Save <kbd>⌘S</kbd></button></div>
+            <div id="editor-empty" class="empty-state"><span class="empty-icon">{ }</span><h1>Build something remarkable.</h1><p>Select a file or ask the agent to create your project.</p></div>
+            <textarea id="editor" class="editor" aria-label="File editor" spellcheck="false" hidden></textarea>
+          </div>
+          <aside class="agent-panel" aria-label="Agent activity">
+            <div class="agent-header"><div><span class="eyebrow">DEVELOPER MODE</span><h2>Agent</h2></div><span id="task-state" class="status-pill neutral"><i></i> Idle</span></div>
+            <label class="sr-only" for="task-history">Task history</label><select id="task-history"><option value="">Task history</option></select>
+            <div id="task-feed" class="task-feed" aria-live="polite" aria-relevant="additions"><article class="agent-message"><div class="message-mark">EA</div><div><strong>Ready when you are.</strong><p>I’ll show every tool action and result while I work.</p></div></article></div>
+            <form id="agent-form" class="composer"><label class="sr-only" for="agent-prompt">Task for the coding agent</label><textarea id="agent-prompt" rows="3" placeholder="Describe what you want to build…" required></textarea><div class="composer-footer"><span>⌘ ↵ to run</span><button id="cancel-task" class="button danger" type="button" hidden>Stop</button><button id="run-agent" class="button primary" type="submit">Run agent</button></div></form>
+          </aside>
+        </section>
+        <section id="view-changes" class="view" data-view-panel="changes" hidden><div class="section-heading"><div><span class="eyebrow">SOURCE CONTROL</span><h1>Changes</h1></div><button id="refresh-diff" class="button ghost" type="button">Refresh</button></div><pre id="diff-output" class="code-output" tabindex="0">Choose a project to inspect changes.</pre></section>
+        <section id="view-checks" class="view" data-view-panel="checks" hidden><div class="section-heading"><div><span class="eyebrow">VALIDATION</span><h1>Checks</h1></div></div><form id="check-form" class="command-form"><label for="check-command">Command</label><div><input id="check-command" value="npm test" autocomplete="off"><button class="button primary" type="submit">Run check</button></div></form><div id="checks-list" class="cards"><p class="empty">No checks have run.</p></div></section>
+        <section id="view-preview" class="view preview-view" data-view-panel="preview" hidden><div class="section-heading"><div><span class="eyebrow">SANDBOXED</span><h1>Preview</h1></div><form id="preview-form" class="inline-form"><label class="sr-only" for="preview-path">Preview path</label><input id="preview-path" value="index.html"><button class="button ghost" type="submit">Open</button></form></div><div id="preview-empty" class="empty-state"><span class="empty-icon">↗</span><h2>No preview loaded</h2><p>Previewed HTML runs in an isolated sandbox.</p></div><iframe id="preview-frame" title="Project preview" sandbox="allow-scripts" hidden></iframe></section>
+      </main>
+    </div>
+  </div>
+  <dialog id="login-dialog" class="modal" aria-labelledby="login-title"><form id="login-form" method="dialog"><span class="brand-mark large" aria-hidden="true">EA</span><span class="eyebrow">SELF-HOSTED WORKSPACE</span><h1 id="login-title">Easy Agent Codex</h1><p>Enter your access token. It stays in memory and is cleared when this page closes.</p><label for="access-token">Access token</label><input id="access-token" type="password" autocomplete="off" required autofocus><p id="login-error" class="form-error" role="alert"></p><button class="button primary wide" type="submit">Open workspace</button><div class="login-divider"><span>or</span></div><button id="local-development" class="button ghost wide" type="button">Open local development workspace</button><small class="local-note">Only works when the server explicitly enables local development on loopback.</small></form></dialog>
+  <dialog id="project-dialog" class="modal" aria-labelledby="project-dialog-title"><form id="project-form" method="dialog"><button class="modal-close" type="button" data-close-dialog aria-label="Close">×</button><span class="eyebrow">NEW PROJECT</span><h1 id="project-dialog-title">Create a workspace</h1><label for="project-name">Project name</label><input id="project-name" maxlength="64" pattern="[A-Za-z0-9][A-Za-z0-9 _-]{0,63}" required><p id="project-error" class="form-error" role="alert"></p><button class="button primary wide" type="submit">Create project</button></form></dialog>
+  <div id="toast-region" class="toasts" aria-live="assertive" aria-atomic="true"></div>
   <script src="/app.js" type="module"></script>
 </body>
 </html>

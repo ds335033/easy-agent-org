@@ -10,11 +10,10 @@ test('agent executes a tool call and returns the final response', async () => {
   const requests = [];
   const agent = createAgent({
     workspace: { listFiles: async () => [{ name: 'README.md' }] },
-    baseUrl: 'http://model.local', model: 'test-model',
-    fetchImpl: async (_url, options) => {
-      requests.push(JSON.parse(options.body));
-      return { ok: true, json: async () => replies.shift() };
-    }
+    provider: { complete: async (messages) => {
+      requests.push({ messages: structuredClone(messages) });
+      return replies.shift().message;
+    } }
   });
   const result = await agent.run('demo', 'Inspect this');
   assert.equal(result.answer, 'Workspace inspected.');

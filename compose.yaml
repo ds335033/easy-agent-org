@@ -4,14 +4,20 @@ services:
     ports:
       - "127.0.0.1:3000:3000"
     environment:
-      MODEL_BASE_URL: http://host.docker.internal:11434
-      MODEL_NAME: ${MODEL_NAME:-qwen3-coder}
-      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
-      LOCAL_DEV: "true"
+      MODEL_BASE_URL: ${MODEL_BASE_URL:-http://127.0.0.1:11434}
+      MODEL_PROTOCOL: ${MODEL_PROTOCOL:-ollama}
+      MODEL_NAME: ${MODEL_NAME:-qwen3:1.7b}
+      MODEL_API_KEY: ${MODEL_API_KEY:-}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:?Set a workspace access token of at least 24 characters}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - easy-agent-data:/app/data/workspaces
+      - easy-agent-data:/app/data
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 1g
     restart: unless-stopped
 
 volumes:

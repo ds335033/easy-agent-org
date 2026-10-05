@@ -1,0 +1,8 @@
+---
+description: Easy Agent architecture, execution, and verification standards
+alwaysApply: true
+---
+
+Follow the shared project instructions in AGENTS.md.
+Read agent-os/standards/index.yml and load standards relevant to the current task.
+Use feature branches, report actual checks, and keep credentials out of source.

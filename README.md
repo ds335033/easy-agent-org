@@ -1,96 +1,96 @@
-# Easy Agent GPT
+# Easy Agent Codex
 
-Easy Agent GPT is a self-hosted coding workspace for founder-led development. It connects to Ollama or another compatible model endpoint, gives the model controlled file and shell tools, and provides a focused browser interface.
+An original self-hosted coding workspace for Darren Smith and Easy Agent.
+Charcoal, orange and white; real task progress, reviewable changes, and an
+explicit boundary between local readiness and production deployment.
 
-There are no application-level message or token quotas. Real capacity is limited by your hardware and by the terms and charges of any model provider you configure.
+**Status: tested local developer foundation, not a production multi-tenant service.**
+Independent software; not OpenAI Codex Cloud or a copy of its private infrastructure.
 
-## Capabilities
+## Working journey
 
-- Multiple persistent coding workspaces
-- Agent tool loop for reading, writing, shell commands, tests, and Git inspection
-- Local Ollama native `/api/chat` inference
-- Browser chat, file overview, Git summary, and direct terminal
-- Optional bearer-token protection
-- Non-root Docker deployment
-- Zero Node package dependencies
-- MCP Streamable HTTP discovery and namespaced tool execution
-- Official Cloudflare MCP endpoint registry with explicit connection states
+Create/open a project → submit an AI task → inspect its diff → run checks in
+Docker → preview its HTML → download a source artifact. Publication stays
+disabled until the existing Sites workflow is available and authorized.
 
-## Quick start with Ollama
+- Persistent projects, task history, streamed output, cancellation, and checkpoints.
+- File browser/editor, Git change previews, check results, HTML preview, exports.
+- Ollama native and OpenAI-compatible Chat Completions streaming adapters.
+- Per-user ownership checks and bearer tokens kept in browser memory only.
+- Disposable, non-root Docker command execution with network off, dropped
+  capabilities, read-only base, CPU/memory/PID/time/output limits.
+- Agent OS project standards shared by Codex, Claude Code and Cursor.
+- Pinned OmniRoute installation (audit-blocked) and separately configured Orca CLI.
 
-Requirements: Node.js 20+ and [Ollama](https://ollama.com/).
+## Local setup
 
-```bash
-ollama pull qwen3-coder
-ollama serve
-cp .env.example .env
-set -a; . ./.env; set +a
-npm start
+Requirements: Node **24–26**, Git, `tar`, Docker with Linux containers, and Ollama.
+See [Windows instructions](docs/windows.md) for your Dell and the installer.
+The core application has no npm runtime dependencies.
+
+```sh
+ollama pull qwen3:1.7b
+docker pull node:24-bookworm
 ```
 
-Open `http://127.0.0.1:3000`. To use another installed model, set `MODEL_NAME`. The server calls Ollama's native `/api/chat` tool interface.
+Start Ollama using its supported installation. For direct local development:
 
-## Docker
-
-Create a strong access token before exposing the service:
-
-```bash
-export ADMIN_TOKEN='replace-with-a-long-random-value'
-docker compose up --build
+```sh
+LOCAL_DEV=true MODEL_PROTOCOL=ollama MODEL_NAME=qwen3:1.7b npm start
 ```
 
-When `ADMIN_TOKEN` is set, API requests need `Authorization: Bearer <token>`. The web client reads a token from the browser key `easy-agent-token`; set it in the browser console for a trusted local deployment:
+This explicit development mode is loopback-only. For token-protected operation,
+configure a random `ADMIN_TOKEN` of at least 24 characters in managed settings
+or an ignored `.env` file. Do not paste tokens into chat or source control.
+Use the application's token login, never browser local storage for credentials.
 
-```js
-localStorage.setItem('easy-agent-token', 'your-token')
-```
+For the installed OmniRoute/Orca stack, use the documented sequence in
+[developer configuration](docs/developer-configuration.md). The launcher binds
+locally and generates **local** credentials privately; it does not generate
+OpenAI, Anthropic, Stripe or other providers' keys.
 
-## Configuration
+The default launcher uses Ollama directly. OmniRoute 3.8.51's dependency audit
+reported high/critical advisories, so gateway startup is blocked until a verified
+patched upgrade passes the audit. Orca's sandbox is also blocked on this cloud
+host. Neither is represented as a ready production integration.
 
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `HOST` | `127.0.0.1` | Listen address |
-| `PORT` | `3000` | HTTP port |
-| `DATA_DIR` | `data/workspaces` | Persistent workspace root |
-| `MODEL_BASE_URL` | `http://127.0.0.1:11434` | Ollama-compatible server |
-| `MODEL_NAME` | `qwen3-coder` | Model identifier |
-| `MODEL_API_KEY` | empty | Optional provider token |
-| `ADMIN_TOKEN` | empty | Optional API bearer token |
-| `MAX_AGENT_STEPS` | `8` | Tool-loop limit per request |
-| `COMMAND_TIMEOUT_MS` | `30000` | Shell command timeout |
-| `MCP_ENABLE` | empty | Comma-separated MCP server IDs to activate |
+## Verification
 
-## Security model
-
-The coding agent and direct terminal can execute arbitrary shell commands. Run it only for trusted users. Docker limits the process to a non-root container, but this is not a hardened multi-tenant sandbox. Do not mount sensitive host paths or the Docker socket. Put TLS and authentication in front of any Internet-facing deployment.
-
-## Development
-
-```bash
+```sh
 npm test
 npm run check
-npm run dev
-npm run cloudflare:whoami
+npm run build
 ```
 
-Health check:
+`npm test` runs actual Docker tests when Docker/image are available, and reports
+skips otherwise. Model contract tests use fixtures. `scripts/smoke-live.mjs`
+separately creates a project and runs real model inference, Docker checks and
+preview assertions against an already-started configured application.
+`scripts/browser-smoke.mjs` uses an explicitly supplied Playwright installation.
+See [validation evidence](docs/validation.md) for this development run.
 
-```bash
-curl http://127.0.0.1:3000/api/health
-```
+## Costs and capacity
 
-## Developer integrations
+This application has no subscription/paywall and no founder application fee.
+Local inference does not incur a hosted-model API charge, but uses hardware,
+storage and electricity. Hosted APIs, Codex, Claude and Cursor retain their own
+plans and limits. No unlimited-free, forever-available, or frontier-model-quality
+claim is made. The small starter model may make coding mistakes: review diffs
+and run checks. Safety limits remain enabled, including daily task and concurrency
+limits; see `.env.example` and [operations](docs/operations.md).
 
-`config/integrations.json` separates MCP servers from ChatGPT-hosted connectors. A listed entry is not a claim that an account is connected. Enable MCP servers with `MCP_ENABLE=cloudflare-docs,cloudflare,stripe`; account services still require their official OAuth or token flow.
+## Boundaries before production
 
-The Cloudflare registry uses the public official account, docs, bindings, builds, and observability MCP URLs. Wrangler runs through a pinned major-version npm command. Account authentication and deployment are separate operations and are not performed automatically.
+Only trusted operators should use this release. Project bind mounts do **not**
+have filesystem byte/inode quotas. Container limits cannot prevent host disk
+exhaustion. Processing bounds are defense in depth, not a hard storage sandbox.
+Docker daemon access is host-privileged; do not expose it or mount it into tasks.
+The compose image alone cannot provide the complete execution workflow.
 
-Stripe CLI and Stripe MCP are separate. Use Stripe test mode and the official authentication flow; payment mutations should not be delegated without explicit review. Figma, TinyFish, Resend, Metricool, Outlook, Adobe, HeyGen, Google Drive, Gmail, GitHub, Slack, Documents, Pages, PDF, Presentations, Spreadsheets, Template Creator, and Plugin Management remain external ChatGPT capabilities until an authorized application API or MCP transport is supplied.
+GitHub account integration/PR UI, remote OAuth plugins, Stripe checkout/webhooks,
+and existing Sites publication are not connected. The supplied website URL did
+not provide editable source. No payment source was imported from unrelated apps,
+no live charges were enabled, and the existing audience was not changed.
 
-## Multi-agent direction
-
-The current release runs one agent loop. The production roadmap supports a coordinator plus role-based workers (planning, implementation, testing, security, review, and documentation), with an upper configuration ceiling of 40 only after durable queues, isolated worktrees, budgets, and provider concurrency controls are implemented and verified.
-
-## Founder ownership
-
-The repository, deployment, workspaces, and local model data remain controlled by the operator. This project is independent software and is not affiliated with or a copy of OpenAI Codex Cloud.
+Read [architecture](docs/architecture.md), [configuration](docs/developer-configuration.md),
+and [operations/recovery](docs/operations.md) before hosting this service.
