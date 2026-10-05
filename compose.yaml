@@ -1,0 +1,18 @@
+services:
+  easy-agent:
+    build: .
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      MODEL_BASE_URL: http://host.docker.internal:11434
+      MODEL_NAME: ${MODEL_NAME:-qwen3-coder}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      LOCAL_DEV: "true"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - easy-agent-data:/app/data/workspaces
+    restart: unless-stopped
+
+volumes:
+  easy-agent-data:

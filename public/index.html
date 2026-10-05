@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Easy Agent GPT</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header><div><span class="mark">EA</span><strong>Easy Agent GPT</strong></div><span id="status">Connecting…</span></header>
+  <main>
+    <aside>
+      <label>Workspace<input id="session" value="founder-lab" maxlength="48"></label>
+      <button id="open">Open workspace</button>
+      <section><h2>Files</h2><div id="files" class="files">No files yet</div></section>
+      <section><h2>Git</h2><pre id="git">Not initialized</pre></section>
+      <section><h2>Integrations</h2><div id="integrations" class="files">Checking…</div></section>
+    </aside>
+    <section class="agent">
+      <div class="hero"><small>FOUNDER · DEVELOPER MODE</small><h1>A coding workspace you control.</h1><p>No app-level quota. Usage is limited by your hardware and model provider.</p></div>
+      <div id="messages" class="messages"><article class="assistant">Tell me what to build. I can inspect files, edit code, run commands, and test the result.</article></div>
+      <form id="chat"><textarea id="prompt" rows="3" placeholder="Create a production-ready…" required></textarea><button>Run agent</button></form>
+      <details><summary>Direct terminal</summary><form id="terminal"><input id="command" placeholder="git status"><button>Run</button></form><pre id="output"></pre></details>
+    </section>
+  </main>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
