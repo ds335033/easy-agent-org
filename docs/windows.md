@@ -44,6 +44,9 @@ Codex, Claude Code and Cursor themselves are not installed by this script. Use
 their official installers/accounts separately. The shared project instructions
 below are installed; they do not replace those applications' setup.
 
+The confirmed Windows Codex launch procedure and administrator-terminal error
+recovery are archived in [`windows-codex-installation.md`](windows-codex-installation.md).
+
 Codex reads `AGENTS.md`; Claude Code reads `CLAUDE.md` and its five Agent OS
 commands; Cursor reads `.cursor/rules/easy-agent.mdc`. These share project rules
 and source files. They do not share authentication, bypass usage limits, or
