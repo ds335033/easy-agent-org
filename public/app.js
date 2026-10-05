@@ -161,6 +161,15 @@ function addMessage(role, title, body = '') {
 }
 
 function addEvent(event) {
+  if (event.type === 'delta') {
+    const feed = $('#task-feed');
+    let node = feed.lastElementChild;
+    if (!node?.classList.contains('stream-delta')) {
+      node = document.createElement('div'); node.className = 'event stream-delta'; feed.append(node);
+    }
+    node.textContent += text(event.content); feed.scrollTop = feed.scrollHeight;
+    return;
+  }
   const node = document.createElement('div');
   const failed = event.type === 'error' || event.ok === false;
   node.className = `event ${failed ? 'error' : event.type === 'result' ? 'success' : ''}`;

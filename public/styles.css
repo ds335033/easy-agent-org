@@ -5,3 +5,4 @@
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
 .login-divider{text-align:center;margin-top:12px;color:var(--muted)}.local-note{display:block;color:var(--muted);margin-top:10px}
 @media(max-width:760px){.sidebar{max-height:none;padding:10px 14px}.files-heading{margin-top:10px}.file-tree{flex:none;max-height:80px;overflow:auto}.sidebar-footer{flex-shrink:0}.code-view{display:flex;flex-direction:column}.agent-panel{order:-1;min-height:400px}.editor-pane{min-height:360px}}
+@media(max-width:760px){.agent-panel{height:540px;flex:0 0 540px}.task-feed{min-height:120px;overflow:auto}.composer{flex-shrink:0}}
