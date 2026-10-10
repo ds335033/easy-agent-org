@@ -1,0 +1,31 @@
+name: Deploy Easy Agent sales preview to Cloudflare Pages
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    environment: cloudflare-preview
+    steps:
+      - name: Checkout reviewed branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9f77a4a8e1b2b6b26e1d0dce6b3a6 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Prepare public-only static website
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ./sales-campaign/dist
+          cp ./sales-campaign/index.html ./sales-campaign/dist/index.html
+          test -s ./sales-campaign/dist/index.html
+      - name: Deploy Cloudflare Pages preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          npx --yes wrangler@4.45.0 pages deploy ./sales-campaign/dist --project-name easy-agent-sales-campaign --branch sales-preview
