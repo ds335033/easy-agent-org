@@ -1,0 +1,45 @@
+name: Deploy Easy Agent sales preview to Cloudflare Pages
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    environment: cloudflare-preview
+    concurrency:
+      group: easy-agent-sales-preview
+      cancel-in-progress: false
+    steps:
+      - name: Checkout campaign branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9f683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Verify expected sales assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s sales-campaign/index.html
+          mkdir -p sales-campaign/dist
+          cp sales-campaign/index.html sales-campaign/dist/index.html
+          test -s sales-campaign/dist/index.html
+      - name: Verify Cloudflare configuration and create Pages project if missing
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}" || { echo "::error::Missing CLOUDFLARE_API_TOKEN"; exit 1; }
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}" || { echo "::error::Missing CLOUDFLARE_ACCOUNT_ID"; exit 1; }
+          if ! npx --yes wrangler@4.45.0 pages project list --json | grep -q '"name": "easy-agent-sales-campaign"'; then
+            npx --yes wrangler@4.45.0 pages project create easy-agent-sales-campaign --production-branch main
+          fi
+      - name: Publish isolated preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.45.0 pages deploy sales-campaign/dist --project-name easy-agent-sales-campaign --branch sales-preview
