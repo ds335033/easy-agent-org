@@ -20,3 +20,6 @@ Provider usage remains subject to provider billing and quotas.
 
 Agent OS is a shared standards/specification layer, not an AI model or a source
 of API credits. OmniRoute is the local API gateway; Orca is a separate CLI.
+
+
+For local Codex CLI, MCP verification, full-stack checks, and safe integration setup, follow `docs/CODEX_FULLSTACK_SETUP.md`.
