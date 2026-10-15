@@ -1,0 +1,19 @@
+package.json
+  s_c939a17472b01f::t_0d7458eaa5f280 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "487520b39e0a7af819910e6cffeccf9bfd3e6959",
+  "prompts": {},
+  "sessions": {
+    "s_c939a17472b01f": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d7452a61-f97c-466a-9ef8-a93021eca057",
+        "model": "unknown"
+      },
+      "human_author": "DARREN SMITH <guitargiveawaychannel345@gmail.com>"
+    }
+  }
+}
