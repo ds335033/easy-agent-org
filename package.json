@@ -11,7 +11,7 @@
     "tools:router": "node scripts/developer-tools.mjs router",
     "tools:app": "node scripts/developer-tools.mjs app",
     "tools:doctor": "node scripts/developer-tools.mjs doctor",
-    "cloudflare:whoami": "npm_config_cache=.cache/npm npx -y wrangler@4 whoami",
+    "cloudflare:whoami": "wrangler whoami",
     "test": "node --test test/*.test.js",
     "check": "node scripts/check.mjs"
   },
